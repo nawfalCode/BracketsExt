@@ -1,0 +1,12 @@
+{
+    "name": "cornify-brackets",
+    "title": "Cornify",
+    "description": "add",
+    "homepage": "http://artoale.com/tutorial/brackets/2013/09/30/writing-brackets-extension-01/",
+    "version": "0.0.1",
+    "author": "Alessandro Artoni <artoale@gmail.com> (https://github.com/artoale)",
+    "license": "MIT",
+    "engines": {
+        "brackets": ">=0.31.0"
+    }
+}
