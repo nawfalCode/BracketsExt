@@ -1,31 +1,36 @@
-/*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global define, $, brackets */
+    /*
+                    Based - in part - on the HelloWorld sample extension on the Brackets wiki:
+                    https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
+                    */
+    define(function (require, exports, module) {
 
-/** Simple extension that adds a "File > Hello World" menu item. Inserts "Hello, world!" at cursor pos. */
-define(function (require, exports, module) {
-    "use strict";
+        var CommandManager = brackets.getModule("command/CommandManager"),
+            Menus = brackets.getModule("command/Menus"),
+            Dialogs = brackets.getModule("widgets/Dialogs"),
+            DefaultDialogs = brackets.getModule("widgets/DefaultDialogs"),
+            AppInit = brackets.getModule("utils/AppInit");
 
-    var CommandManager = brackets.getModule("command/CommandManager"),
-        EditorManager  = brackets.getModule("editor/EditorManager"),
-        Menus          = brackets.getModule("command/Menus");
-
-
-    // Function to run when the menu item is clicked
-    function handleHelloWorld() {
-        var editor = EditorManager.getFocusedEditor();
-        if (editor) {
-            var insertionPos = editor.getCursorPos();
-            editor.document.replaceRange("Hello, world!", insertionPos);
+        function log(s) {
+            console.log("[helloworld3] " + s);
         }
-    }
 
+        function handleHelloWorld() {
+            var str = "";
+            str += '<form action="demo_form.asp">  First name: <input type="text" name="fname"><br>  Last name: <input type="text" name="lname"><br>  <input type="submit" value="Submit"> < /form>';
+            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "Hello World", str);
+        }
 
-    // First, register a command - a UI-less object associating an id to a handler
-    var MY_COMMAND_ID = "helloworld.writehello";   // package-style naming to avoid collisions
-    CommandManager.register("Hello World 2", MY_COMMAND_ID, handleHelloWorld);
+        AppInit.appReady(function () {
 
-    // Then create a menu item bound to the command
-    // The label of the menu item is the name we gave the command (see above)
-    var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
-    menu.addMenuItem(MY_COMMAND_ID);
-});
+            log("Hello from HelloWorld3.");
+
+            var HELLOWORLD_EXECUTE = "helloworld.execute";
+
+            CommandManager.register("Run HelloWorld", HELLOWORLD_EXECUTE, handleHelloWorld);
+
+            var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
+            menu.addMenuItem(HELLOWORLD_EXECUTE);
+
+        });
+
+    });
