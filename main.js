@@ -1,7 +1,7 @@
     /*
-                                                                                                                                                                                    Based - in part - on the HelloWorld sample extension on the Brackets wiki:
-                                                                                                                                                                                    https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
-                                                                                                                                                                                    */
+                                                                                                                                                                                                            Based - in part - on the HelloWorld sample extension on the Brackets wiki:
+                                                                                                                                                                                                            https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
+                                                                                                                                                                                                            */
     define(function (require, exports, module) {
 
         var CommandManager = brackets.getModule("command/CommandManager"),
@@ -27,12 +27,25 @@
                 pwd: 'ftpSettings.pwd',
                 savepwd: 'ftpSettings.savepwd',
                 remoteroot: 'ftpSettings.remoteRoot',
-                Strings: ['Strings','aaaa']
+                Strings: ['Strings', 'aaaa']
             };
             console.log('we are here!!');
             Dialogs.showModalDialogUsingTemplate(Mustache.render(mainDialog, templateVars), false);
 
+            var $dlg = $(".ftp-dialog.instance");
+            $dlg.find(".dialog-button[data-button-id='cancel']").on("click", handleCancel);
+            $dlg.find(".dialog-button[data-button-id='ok']").on("click", handleOk);
 
+            function handleCancel() {
+
+
+                Dialogs.cancelModalDialogIfOpen("ftp-dialog");
+
+            }
+
+            function handleOk() {
+                Dialogs.cancelModalDialogIfOpen("ftp-dialog");
+            }
 
             Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1", str);
             //   window.alert($("#fname").val());
