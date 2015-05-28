@@ -1,7 +1,7 @@
     /*
-                                                                                                                                                                                                            Based - in part - on the HelloWorld sample extension on the Brackets wiki:
-                                                                                                                                                                                                            https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
-                                                                                                                                                                                                            */
+                                                                                                                                                                                                                    Based - in part - on the HelloWorld sample extension on the Brackets wiki:
+                                                                                                                                                                                                                    https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
+                                                                                                                                                                                                                    */
     define(function (require, exports, module) {
 
         var CommandManager = brackets.getModule("command/CommandManager"),
@@ -20,14 +20,11 @@
             var str = "";
 
             var templateVars = {
-                host: 'aa',
-                port: 'ftpSettings.port',
-                user: 'ftpSettings.user',
-                privateKeyFile: 'ftpSettings.privateKeyFile',
-                pwd: 'ftpSettings.pwd',
-                savepwd: 'ftpSettings.savepwd',
-                remoteroot: 'ftpSettings.remoteRoot',
-                Strings: ['Strings', 'aaaa']
+                server: '',
+                teamDir: '',
+                userName: '',
+                updateTeamDir: true,
+                updateUserDir: true
             };
             console.log('we are here!!');
             Dialogs.showModalDialogUsingTemplate(Mustache.render(mainDialog, templateVars), false);
@@ -44,6 +41,17 @@
             }
 
             function handleOk() {
+                var $dlg = $(".ftp-dialog.instance");
+                ftpSettings.host = $dlg.find("#host").val();
+                ftpSettings.port = $dlg.find("#port").val();
+                ftpSettings.user = $dlg.find("#user").val();
+                if (ftpSettings.connect === 'SFTP') ftpSettings.privateKeyFile = $dlg.find("#keyfile").val();
+                ftpSettings.pwd = $dlg.find("#pwd").val();
+                ftpSettings.savepwd = $dlg.find("#savepwd:checked").val();
+                ftpSettings.remoteRoot = $dlg.find("#remoteroot").val();
+
+                saveSettings();
+
                 Dialogs.cancelModalDialogIfOpen("ftp-dialog");
             }
 
