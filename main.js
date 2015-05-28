@@ -1,7 +1,7 @@
     /*
-                                                                                                                                                                        Based - in part - on the HelloWorld sample extension on the Brackets wiki:
-                                                                                                                                                                        https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
-                                                                                                                                                                        */
+                                                                                                                                                                                    Based - in part - on the HelloWorld sample extension on the Brackets wiki:
+                                                                                                                                                                                    https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
+                                                                                                                                                                                    */
     define(function (require, exports, module) {
 
         var CommandManager = brackets.getModule("command/CommandManager"),
@@ -10,20 +10,32 @@
             DefaultDialogs = brackets.getModule("widgets/DefaultDialogs"),
             AppInit = brackets.getModule("utils/AppInit");
 
+        var mainDialog = require("text!dialog.html");
+
         function log(s) {
             console.log("[helloworld3] " + s);
         }
 
         function handleHelloWorld() {
             var str = "";
-            str += '<div class="inline-editor-header">\
-  <button class="btn btn-mini no-focus btn-shorthand-done" title="Copy changes back to code">Done</button>\
-  <button class="btn btn-mini no-focus btn-shorthand-cancel" title="Cancel changes">Cancel</button>\
-</div>\
-<div class="inline-editor-holder"></div>';
-            console.log('we are going to show the dialog');
+
+            var templateVars = {
+                host: 'aa',
+                port: 'ftpSettings.port',
+                user: 'ftpSettings.user',
+                privateKeyFile: 'ftpSettings.privateKeyFile',
+                pwd: 'ftpSettings.pwd',
+                savepwd: 'ftpSettings.savepwd',
+                remoteroot: 'ftpSettings.remoteRoot',
+                Strings: ['Strings','aaaa']
+            };
+            console.log('we are here!!');
+            Dialogs.showModalDialogUsingTemplate(Mustache.render(mainDialog, templateVars), false);
+
+
+
             Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1", str);
-            window.alert($("#fname").val());
+            //   window.alert($("#fname").val());
 
             function test() {
                 console.log('we got the message');

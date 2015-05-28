@@ -1,0 +1,6 @@
+Step#1: Create UI
+Step#2: Assign functions
+Step#3: Call the server...
+Step#4: Testing
+Step#5: Deploy
+Step#6: Thats it... Go home...
