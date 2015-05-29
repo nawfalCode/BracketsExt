@@ -1,7 +1,7 @@
     /*
-                                                                                                                                                                                                                                                                            Based - in part - on the HelloWorld sample extension on the Brackets wiki:
-                                                                                                                                                                                                                                                                            https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
-                                                                                                                                                                                                                                                                            */
+                                                                                                                                                                                                                                                                                                                                                            Based - in part - on the HelloWorld sample extension on the Brackets wiki:
+                                                                                                                                                                                                                                                                                                                                                            https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
+                                                                                                                                                                                                                                                                                                                                                            */
     define(function (require, exports, module) {
         var systemSettings = {
             server: '',
@@ -18,9 +18,12 @@
             DefaultDialogs = brackets.getModule("widgets/DefaultDialogs"),
             AppInit = brackets.getModule("utils/AppInit");
         DocumentManager = brackets.getModule("document/DocumentManager");
+        ExtensionUtils = brackets.getModule("utils/ExtensionUtils");
 
         var mainDialog = require("text!dialog.html");
-        var codeServer=require('code.js');
+        var toolbarSettings = require("text!toolbar-settings.html");
+        var toolbarUploader = require("text!toolbar-uploader.html");
+        //   var codeServer=require('code.js');
 
         function log(s) {
             console.log("[helloworld3] " + s);
@@ -76,10 +79,18 @@
 
 
         AppInit.appReady(function () {
+            ExtensionUtils.loadStyleSheet(module, "css/style.css");
             log("Upload Assignement Extenstion");
             var HELLOWORLD_EXECUTE = "ENG1003Uploader.monash";
             CommandManager.register("ENG1003 Uploader", HELLOWORLD_EXECUTE, handleHelloWorld);
             var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
             menu.addMenuItem(HELLOWORLD_EXECUTE);
+
+            $("#main-toolbar .buttons").append(toolbarSettings);
+            $("#toolbar-settings").on("click", handleHelloWorld);
+
+            $("#main-toolbar .buttons").append(toolbarUploader);
+            $("#toolbar-uploader").on("click", handleHelloWorld);
+
         });
     });

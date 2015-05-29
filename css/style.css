@@ -1,0 +1,13 @@
+#toolbar-settings {
+    display: inline-block;
+    background-image: url('../img/settings.svg');
+    background-size: calc(100% - 6px) auto;
+    background-position: center center;
+}
+
+#toolbar-uploader {
+    display: inline-block;
+    background-image: url('../img/upload2.svg');
+    background-size: calc(100% - 6px) auto;
+    background-position: center center;
+}
