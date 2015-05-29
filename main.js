@@ -1,8 +1,15 @@
     /*
-                                                                                                                                                                                                                    Based - in part - on the HelloWorld sample extension on the Brackets wiki:
-                                                                                                                                                                                                                    https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
-                                                                                                                                                                                                                    */
+                                                                                                                                                                                                                                        Based - in part - on the HelloWorld sample extension on the Brackets wiki:
+                                                                                                                                                                                                                                        https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
+                                                                                                                                                                                                                                        */
     define(function (require, exports, module) {
+        var systemSettings = {
+            server: '',
+            teamDir: '',
+            userName: '',
+            updateTeamDir: true,
+            updateUserDir: true
+        };
 
         var CommandManager = brackets.getModule("command/CommandManager"),
             Menus = brackets.getModule("command/Menus"),
@@ -19,43 +26,34 @@
         function handleHelloWorld() {
             var str = "";
 
-            var templateVars = {
-                server: '',
-                teamDir: '',
-                userName: '',
-                updateTeamDir: true,
-                updateUserDir: true
-            };
             console.log('we are here!!');
-            Dialogs.showModalDialogUsingTemplate(Mustache.render(mainDialog, templateVars), false);
+            Dialogs.showModalDialogUsingTemplate(Mustache.render(mainDialog, systemSettings), false);
 
-            var $dlg = $(".ftp-dialog.instance");
+            var $dlg = $(".eng1003setting-dialog.instance");
             $dlg.find(".dialog-button[data-button-id='cancel']").on("click", handleCancel);
             $dlg.find(".dialog-button[data-button-id='ok']").on("click", handleOk);
 
             function handleCancel() {
 
 
-                Dialogs.cancelModalDialogIfOpen("ftp-dialog");
+                Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
 
             }
 
             function handleOk() {
-                var $dlg = $(".ftp-dialog.instance");
-                ftpSettings.host = $dlg.find("#host").val();
-                ftpSettings.port = $dlg.find("#port").val();
-                ftpSettings.user = $dlg.find("#user").val();
-                if (ftpSettings.connect === 'SFTP') ftpSettings.privateKeyFile = $dlg.find("#keyfile").val();
-                ftpSettings.pwd = $dlg.find("#pwd").val();
-                ftpSettings.savepwd = $dlg.find("#savepwd:checked").val();
-                ftpSettings.remoteRoot = $dlg.find("#remoteroot").val();
+                var $dlg = $(".eng1003setting-dialog.instance");
+                systemSettings.server = $dlg.find("#server").val();
+                systemSettings.teamDir = $dlg.find("#teamDir").val();
+                systemSettings.userName = $dlg.find("#userName").val();
+                systemSettings.updateTeamDir = $dlg.find("#updateTeamDir").val();
+                systemSettings.updateUserDir = $dlg.find("#updateUserDir:checked").val();
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1",systemSettings.teamDir);
+                uploadPayload();
 
-                saveSettings();
-
-                Dialogs.cancelModalDialogIfOpen("ftp-dialog");
+                Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
             }
 
-            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1", str);
+            //    Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1", str);
             //   window.alert($("#fname").val());
 
             function test() {
