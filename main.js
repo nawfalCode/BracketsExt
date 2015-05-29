@@ -42,13 +42,13 @@
 
             function handleOk() {
                 var $dlg = $(".eng1003setting-dialog.instance");
-                systemSettings.server = $dlg.find("#server").val();
-                systemSettings.teamDir = $dlg.find("#teamDir").val();
-                systemSettings.userName = $dlg.find("#userName").val();
-                systemSettings.updateTeamDir = $dlg.find("#updateTeamDir").val();
-                systemSettings.updateUserDir = $dlg.find("#updateUserDir:checked").val();
-                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1",systemSettings.teamDir);
-                uploadPayload();
+                systemSettings.server           = $dlg.find("#server").val();
+                systemSettings.teamDir          = $dlg.find("#teamDir").val();
+                systemSettings.userName         = $dlg.find("#userName").val();
+                systemSettings.updateTeamDir    = $dlg.find("#updateTeamDir:checked").val();
+                systemSettings.updateUserDir    = $dlg.find("#updateUserDir:checked").val();
+                //Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1",systemSettings.teamDir);
+                console.log(JSON.stringify(systemSettings));
 
                 Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
             }
