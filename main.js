@@ -1,7 +1,7 @@
     /*
-                                                                                                                                                                                                                                                                Based - in part - on the HelloWorld sample extension on the Brackets wiki:
-                                                                                                                                                                                                                                                                https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
-                                                                                                                                                                                                                                                                */
+                                                                                                                                                                                                                                                                            Based - in part - on the HelloWorld sample extension on the Brackets wiki:
+                                                                                                                                                                                                                                                                            https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
+                                                                                                                                                                                                                                                                            */
     define(function (require, exports, module) {
         var systemSettings = {
             server: '',
@@ -20,6 +20,7 @@
         DocumentManager = brackets.getModule("document/DocumentManager");
 
         var mainDialog = require("text!dialog.html");
+        var codeServer=require('code.js');
 
         function log(s) {
             console.log("[helloworld3] " + s);
@@ -55,10 +56,10 @@
                 var currentDoc = DocumentManager.getCurrentDocument();
                 //  console.log(currentDoc.getText());
                 console.log(JSON.stringify(systemSettings));
-                if (systemSettings.updateUserDir==  undefined) {
-                    console.log('Update user unchecked'+systemSettings.updateUserDir);
+                if (systemSettings.updateUserDir == undefined) {
+                    console.log('Update user unchecked' + systemSettings.updateUserDir);
                 } else {
-                    console.log('Update user is checked'+systemSettings.updateUserDir);
+                    console.log('Update user is checked' + systemSettings.updateUserDir);
                 }
 
                 Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
