@@ -1,14 +1,15 @@
     /*
-                                                                                                                                                                                                                                        Based - in part - on the HelloWorld sample extension on the Brackets wiki:
-                                                                                                                                                                                                                                        https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
-                                                                                                                                                                                                                                        */
+                                                                                                                                                                                                                                                                Based - in part - on the HelloWorld sample extension on the Brackets wiki:
+                                                                                                                                                                                                                                                                https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
+                                                                                                                                                                                                                                                                */
     define(function (require, exports, module) {
         var systemSettings = {
             server: '',
             teamDir: '',
             userName: '',
             updateTeamDir: true,
-            updateUserDir: true
+            updateUserDir: true,
+            rememberMe: true
         };
 
         var CommandManager = brackets.getModule("command/CommandManager"),
@@ -16,6 +17,7 @@
             Dialogs = brackets.getModule("widgets/Dialogs"),
             DefaultDialogs = brackets.getModule("widgets/DefaultDialogs"),
             AppInit = brackets.getModule("utils/AppInit");
+        DocumentManager = brackets.getModule("document/DocumentManager");
 
         var mainDialog = require("text!dialog.html");
 
@@ -42,13 +44,22 @@
 
             function handleOk() {
                 var $dlg = $(".eng1003setting-dialog.instance");
-                systemSettings.server           = $dlg.find("#server").val();
-                systemSettings.teamDir          = $dlg.find("#teamDir").val();
-                systemSettings.userName         = $dlg.find("#userName").val();
-                systemSettings.updateTeamDir    = $dlg.find("#updateTeamDir:checked").val();
-                systemSettings.updateUserDir    = $dlg.find("#updateUserDir:checked").val();
+                systemSettings.server = $dlg.find("#server").val();
+                systemSettings.teamDir = $dlg.find("#teamDir").val();
+                systemSettings.userName = $dlg.find("#userName").val();
+                systemSettings.updateTeamDir = $dlg.find("#updateTeamDir:checked").val();
+                systemSettings.updateUserDir = $dlg.find("#updateUserDir:checked").val();
+                systemSettings.rememberMe = $dlg.find("#rememberMe:checked").val();
+
                 //Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1",systemSettings.teamDir);
+                var currentDoc = DocumentManager.getCurrentDocument();
+                //  console.log(currentDoc.getText());
                 console.log(JSON.stringify(systemSettings));
+                if (systemSettings.updateUserDir==  undefined) {
+                    console.log('Update user unchecked'+systemSettings.updateUserDir);
+                } else {
+                    console.log('Update user is checked'+systemSettings.updateUserDir);
+                }
 
                 Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
             }
