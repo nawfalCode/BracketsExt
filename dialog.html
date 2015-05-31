@@ -19,7 +19,7 @@
                     Server Address
                 </label>
                 <div class="controls">
-                    <input class="span5" type="text" id="server" value="{{server}}" />
+                    <input class="span3" type="text" id="server" value="{{server}}" />
                 </div>
             </div>
             <div class="control-group">
@@ -27,13 +27,13 @@
                     Team Directory
                 </label>
                 <div class="controls">
-                    <input class="span5" type="text" id="teamDir" value="{{teamDir}}" />
+                    <input class="span3" type="text" id="teamDir" value="{{teamDir}}" />
                 </div>
             </div>
             <div class="control-group">
                 <label class="control-label">UserName</label>
                 <div class="controls">
-                    <input class="span5" type="text" id="userName" value="{{userName}}" />
+                    <input class="span3" type="text" id="userName" value="{{userName}}" />
                 </div>
             </div>
             <!--   
@@ -55,7 +55,17 @@
    -->
 
             <div class="control-group">
-                <label class="control-label"></label>
+                <label class="control-label" for="assignment">Select Assignment </label>
+                <div class="controls">
+                    <select class="control-group" id="assignment">
+                        <option>Assignment One</option>
+                        <option>Assignment Two</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="control-group">
                 <div class="controls">
                     <input type="radio" name="update" id="updateTeamDir" {{updateTeamDir}} value="checked" /> Update Team Directory
                 </div>
