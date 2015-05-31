@@ -1,96 +1,124 @@
-    /*
-                                                                                                                                                                                                                                                                                                                                                            Based - in part - on the HelloWorld sample extension on the Brackets wiki:
-                                                                                                                                                                                                                                                                                                                                                            https://github.com/adobe/brackets/wiki/Simple-%22Hello-World%22-extension
-                                                                                                                                                                                                                                                                                                                                                            */
-    define(function (require, exports, module) {
-        var systemSettings = {
-            server: '',
-            teamDir: '',
-            userName: '',
-            updateTeamDir: true,
-            updateUserDir: true,
-            rememberMe: true
-        };
+/*
+ * ENG1003 Assignment Uploader
+ *
+ * Written by Nawfal Ali
+ *
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015  Monash University
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
 
-        var CommandManager = brackets.getModule("command/CommandManager"),
-            Menus = brackets.getModule("command/Menus"),
-            Dialogs = brackets.getModule("widgets/Dialogs"),
-            DefaultDialogs = brackets.getModule("widgets/DefaultDialogs"),
-            AppInit = brackets.getModule("utils/AppInit");
-        DocumentManager = brackets.getModule("document/DocumentManager");
-        ExtensionUtils = brackets.getModule("utils/ExtensionUtils");
+define(function (require, exports, module) {
+    var systemSettings = {
+        server: 'http://eng1003.eng.monash.edu/',
+        teamDir: '',
+        userName: '',
+        updateTeamDir: true,
+        updateUserDir: true,
+        assignment: 'a2',
+        rememberMe: true
+    };
 
-        var mainDialog = require("text!dialog.html");
-        var toolbarSettings = require("text!toolbar-settings.html");
-        var toolbarUploader = require("text!toolbar-uploader.html");
-        //   var codeServer=require('code.js');
+    var CommandManager = brackets.getModule("command/CommandManager"),
+        Menus = brackets.getModule("command/Menus"),
+        Dialogs = brackets.getModule("widgets/Dialogs"),
+        DefaultDialogs = brackets.getModule("widgets/DefaultDialogs"),
+        AppInit = brackets.getModule("utils/AppInit");
+    DocumentManager = brackets.getModule("document/DocumentManager");
+    ExtensionUtils = brackets.getModule("utils/ExtensionUtils");
 
-        function log(s) {
-            console.log("[helloworld3] " + s);
+    var mainDialog = require("text!dialog.html");
+    var toolbarSettings = require("text!toolbar-settings.html");
+    var toolbarUploader = require("text!toolbar-uploader.html");
+    //   var codeServer=require('code.js');
+
+
+    function log(s) {
+        console.log("[helloworld3] " + s);
+    }
+
+    function handleHelloWorld() {
+        var str = "";
+
+        console.log('we are here!!');
+        Dialogs.showModalDialogUsingTemplate(Mustache.render(mainDialog, systemSettings), false);
+
+        var $dlg = $(".eng1003setting-dialog.instance");
+        $dlg.find(".dialog-button[data-button-id='cancel']").on("click", handleCancel);
+        $dlg.find(".dialog-button[data-button-id='ok']").on("click", handleOk);
+
+        function handleCancel() {
+
+
+            Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
+
         }
 
-        function handleHelloWorld() {
-            var str = "";
-
-            console.log('we are here!!');
-            Dialogs.showModalDialogUsingTemplate(Mustache.render(mainDialog, systemSettings), false);
-
+        function handleOk() {
             var $dlg = $(".eng1003setting-dialog.instance");
-            $dlg.find(".dialog-button[data-button-id='cancel']").on("click", handleCancel);
-            $dlg.find(".dialog-button[data-button-id='ok']").on("click", handleOk);
+            systemSettings.server = $dlg.find("#server").val();
+            systemSettings.teamDir = $dlg.find("#teamDir").val();
+            systemSettings.userName = $dlg.find("#userName").val();
+            systemSettings.updateTeamDir = $dlg.find("#updateTeamDir:checked").val();
+            systemSettings.updateUserDir = $dlg.find("#updateUserDir:checked").val();
+            systemSettings.rememberMe = $dlg.find("#rememberMe:checked").val();
 
-            function handleCancel() {
-
-
-                Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
-
+            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1", systemSettings.teamDir);
+            var currentDoc = DocumentManager.getCurrentDocument();
+            //  console.log(currentDoc.getText());
+            console.log(JSON.stringify(systemSettings));
+            if (systemSettings.updateUserDir == undefined) {
+                console.log('Update user unchecked' + systemSettings.updateUserDir);
+            } else {
+                console.log('Update user is checked' + systemSettings.updateUserDir);
             }
 
-            function handleOk() {
-                var $dlg = $(".eng1003setting-dialog.instance");
-                systemSettings.server = $dlg.find("#server").val();
-                systemSettings.teamDir = $dlg.find("#teamDir").val();
-                systemSettings.userName = $dlg.find("#userName").val();
-                systemSettings.updateTeamDir = $dlg.find("#updateTeamDir:checked").val();
-                systemSettings.updateUserDir = $dlg.find("#updateUserDir:checked").val();
-                systemSettings.rememberMe = $dlg.find("#rememberMe:checked").val();
-
-                //Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1",systemSettings.teamDir);
-                var currentDoc = DocumentManager.getCurrentDocument();
-                //  console.log(currentDoc.getText());
-                console.log(JSON.stringify(systemSettings));
-                if (systemSettings.updateUserDir == undefined) {
-                    console.log('Update user unchecked' + systemSettings.updateUserDir);
-                } else {
-                    console.log('Update user is checked' + systemSettings.updateUserDir);
-                }
-
-                Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
-            }
-
-            //    Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1", str);
-            //   window.alert($("#fname").val());
-
-            function test() {
-                console.log('we got the message');
-                window.alert("this is test");
-            }
+            Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
         }
 
+        //    Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1", str);
+        //   window.alert($("#fname").val());
 
-        AppInit.appReady(function () {
-            ExtensionUtils.loadStyleSheet(module, "css/style.css");
-            log("Upload Assignement Extenstion");
-            var HELLOWORLD_EXECUTE = "ENG1003Uploader.monash";
-            CommandManager.register("ENG1003 Uploader", HELLOWORLD_EXECUTE, handleHelloWorld);
-            var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
-            menu.addMenuItem(HELLOWORLD_EXECUTE);
+        function test() {
+            console.log('we got the message');
+            window.alert("this is test");
+        }
+    }
 
-            $("#main-toolbar .buttons").append(toolbarSettings);
-            $("#toolbar-settings").on("click", handleHelloWorld);
 
-            $("#main-toolbar .buttons").append(toolbarUploader);
-            $("#toolbar-uploader").on("click", handleHelloWorld);
+    AppInit.appReady(function () {
+        ExtensionUtils.loadStyleSheet(module, "css/style.css");
+        log("Upload Assignement Extenstion");
+        var HELLOWORLD_EXECUTE = "ENG1003Uploader.monash";
+        CommandManager.register("ENG1003 Uploader", HELLOWORLD_EXECUTE, handleHelloWorld);
+        var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
+        menu.addMenuItem(HELLOWORLD_EXECUTE);
 
-        });
+        $("#main-toolbar .buttons").append(toolbarSettings);
+        $("#toolbar-settings").on("click", handleHelloWorld);
+
+        $("#main-toolbar .buttons").append(toolbarUploader);
+        $("#toolbar-uploader").on("click", handleHelloWorld);
+
     });
+});
