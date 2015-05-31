@@ -31,12 +31,12 @@
 define(function (require, exports, module) {
     var systemSettings = {
         server: 'http://eng1003.eng.monash.edu/',
-        teamDir: '',
-        userName: '',
-        updateTeamDir: 'checked',
-        updateUserDir: '',
-        assignment: 'a2',
-        rememberMe: true
+        teamDir: 'bhdck',
+        userName: 'nawfalms',
+        updateTeamDir: '',
+        updateUserDir: 'checked',
+        assignment: '',
+        rememberMe: 'checked'
     };
 
     var CommandManager = brackets.getModule("command/CommandManager"),
@@ -50,7 +50,7 @@ define(function (require, exports, module) {
     var mainDialog = require("text!dialog.html");
     var toolbarSettings = require("text!toolbar-settings.html");
     var toolbarUploader = require("text!toolbar-uploader.html");
-    //   var codeServer=require('code.js');
+    var codeServer = require("code");
 
 
     function log(s) {
@@ -82,10 +82,14 @@ define(function (require, exports, module) {
             systemSettings.updateTeamDir = $dlg.find("#updateTeamDir:checked").val();
             systemSettings.updateUserDir = $dlg.find("#updateUserDir:checked").val();
             systemSettings.rememberMe = $dlg.find("#rememberMe:checked").val();
+            systemSettings.assignment = $dlg.find("#assignment").val();
+            console.log(((systemSettings.updateUserDir === 'checked') ? "1" : "0"));
 
             Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1", systemSettings.teamDir);
             var currentDoc = DocumentManager.getCurrentDocument();
             //  console.log(currentDoc.getText());
+            var uploader = new Uploader(); //systemSettings, currentDoc, Dialogs);
+            uploader.uploadToWebsite();
             console.log(JSON.stringify(systemSettings));
             if (systemSettings.updateUserDir == undefined) {
                 console.log('Update user unchecked' + systemSettings.updateUserDir);
