@@ -19,7 +19,7 @@
                     Server Address
                 </label>
                 <div class="controls">
-                    <input class="span3" type="text" id="server" value="{{server}}" />
+                    <input class="span5" type="text" id="server" value="{{server}}" />
                 </div>
             </div>
             <div class="control-group">
@@ -27,13 +27,13 @@
                     Team Directory
                 </label>
                 <div class="controls">
-                    <input class="span3" type="text" id="teamDir" value="{{teamDir}}" />
+                    <input class="span5" type="text" id="teamDir" value="{{teamDir}}" />
                 </div>
             </div>
             <div class="control-group">
                 <label class="control-label">UserName</label>
                 <div class="controls">
-                    <input type="text" id="userName" value="{{userName}}" />
+                    <input class="span5" type="text" id="userName" value="{{userName}}" />
                 </div>
             </div>
             <!--   
@@ -57,15 +57,23 @@
             <div class="control-group">
                 <label class="control-label"></label>
                 <div class="controls">
-                    <input type="checkbox" id="updateTeamDir" {{updateTeamDir}} value="checked" /> Update Team Directory
+                    <input type="radio" name="update" id="updateTeamDir" {{updateTeamDir}} value="checked" /> Update Team Directory
                 </div>
                 <div class="controls">
-                    <input type="checkbox" id="updateUserDir" {{updateUserDir}} value="checked" /> Update User Directory
+                    <input type="radio" name="update" id="updateUserDir" {{updateUserDir}} value="checked" /> Update User Directory
                 </div>
                 <div class="controls">
                     <input type="checkbox" id="rememberMe" {{rememberMe}} value="checked" /> Remember My Settings
                 </div>
             </div>
+
+
+
+
+
+
+
+
             <!--
             <div class="control-group">
                 <label class="control-label">Remote root</label>

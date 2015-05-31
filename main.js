@@ -33,8 +33,8 @@ define(function (require, exports, module) {
         server: 'http://eng1003.eng.monash.edu/',
         teamDir: '',
         userName: '',
-        updateTeamDir: true,
-        updateUserDir: true,
+        updateTeamDir: 'checked',
+        updateUserDir: '',
         assignment: 'a2',
         rememberMe: true
     };
