@@ -38,18 +38,25 @@ define(function (require, exports, module) {
         assignment: '',
         rememberMe: 'checked'
     };
-
+    // if the user hits the upload icon or shortkey without checking the settings, firstRun will be used to show the settings window 
     var firstRun = true;
+    // System Strings
     var strings = {
         SERVER_NOT_FOUND: 'Please Enter Server Address',
         USER_NOT_FOUND: 'Please Enter User Name',
-        TEAM_NOT_FOUND: 'Please Enter Team Directory Name'
+        TEAM_NOT_FOUND: 'Please Enter Team Directory Name',
+        SETTINGS_SHORTCUT: 'Ctrl-Shift-I',
+        SETTINGS_MENU_TITLE: 'ENG1003 Settings',
+        UPLOAD_SHORTCUT: 'Ctrl-Shift-U',
+        UPLOAD_NEMU_TITLE: 'ENG1003 Uploader',
+        STORAGE_KEY: 'Eng1003Uploader.Monash',
+
+
     };
 
-    //Shortcut keys for settings and uploading respectively 
-    var SETTINGS_SHORTCUT = 'Ctrl-Shift-I';
-    var UPLOAD_SHORTCUT = 'Ctrl-Shift-U';
 
+
+    //Required Modules
     var CommandManager = brackets.getModule("command/CommandManager"),
         Menus = brackets.getModule("command/Menus"),
         Dialogs = brackets.getModule("widgets/Dialogs"),
@@ -78,6 +85,9 @@ define(function (require, exports, module) {
         var $dlg = $(".eng1003setting-dialog.instance");
         $dlg.find(".dialog-button[data-button-id='cancel']").on("click", handleCancel);
         $dlg.find(".dialog-button[data-button-id='ok']").on("click", handleOk);
+        //Update the Assignment List Box
+        $dlg.find("#assignment").val(systemSettings.assignment);
+
 
         function handleCancel() {
             Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
@@ -108,8 +118,21 @@ define(function (require, exports, module) {
             systemSettings.updateUserDir = $dlg.find("#updateUserDir:checked").val();
             systemSettings.rememberMe = $dlg.find("#rememberMe:checked").val();
             systemSettings.assignment = $dlg.find("#assignment").val();
+            //Save/Remove Settings to Local Storage
+            setSettingsToStorage();
+            //Upload the Document
             UploadCurrentDocument();
+            //Close the currnet Window
             Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
+        }
+    }
+
+
+    function setSettingsToStorage() {
+        if (systemSettings.rememberMe === 'checked') {
+            localStorage.setItem(strings.STORAGE_KEY, JSON.stringify(systemSettings));
+        } else {
+            localStorage.removeItem(strings.STORAGE_KEY);
         }
     }
 
@@ -145,22 +168,29 @@ define(function (require, exports, module) {
         uploader.uploadToWebsite();
     }
 
+    function getSettingsFromStorage() {
+        var savedSettings = localStorage.getItem(strings.STORAGE_KEY);
+        log(savedSettings);
+        if (savedSettings !== null) {
+            systemSettings = JSON.parse(savedSettings);
+        }
+    }
 
     AppInit.appReady(function () {
         ExtensionUtils.loadStyleSheet(module, "css/style.css");
         log("Upload Assignement Extenstion");
-
+        getSettingsFromStorage();
         //Settings Window and Shortcut
         var SETTINGS_EXECUTE = "ENG1003Uploader.settings";
-        CommandManager.register("ENG1003 Settings", SETTINGS_EXECUTE, handleSettings);
+        CommandManager.register(strings.SETTINGS_MENU_TITLE, SETTINGS_EXECUTE, handleSettings);
         var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
-        menu.addMenuItem(SETTINGS_EXECUTE, SETTINGS_SHORTCUT);
+        menu.addMenuItem(SETTINGS_EXECUTE, strings.SETTINGS_SHORTCUT);
 
         //Upload Command  and Shortcut
         var UPLOADER_EXECUTE = "ENG1003Uploader.upload";
-        CommandManager.register("Assignment Upload", UPLOADER_EXECUTE, UploadCurrentDocument);
+        CommandManager.register(strings.UPLOAD_NEMU_TITLE, UPLOADER_EXECUTE, UploadCurrentDocument);
         var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
-        menu.addMenuItem(UPLOADER_EXECUTE, UPLOAD_SHORTCUT);
+        menu.addMenuItem(UPLOADER_EXECUTE, strings.UPLOAD_SHORTCUT);
 
         //toolbar Gear ICon for Settings
         $("#main-toolbar .buttons").append(toolbarSettings);

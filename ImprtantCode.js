@@ -1,1 +1,0 @@
-Online free svg editor that creartes ne wsvg: http: //svg-edit.googlecode.com/svn/branches/stable/editor/svg-editor.html
