@@ -39,6 +39,10 @@ define(function (require, exports, module) {
         rememberMe: 'checked'
     };
 
+    //Shortcut keys for settings and uploading respectively 
+    var SETTINGS_SHORTCUT = 'Ctrl-Shift-I';
+    var UPLOAD_SHORTCUT = 'Ctrl-Shift-U';
+
     var CommandManager = brackets.getModule("command/CommandManager"),
         Menus = brackets.getModule("command/Menus"),
         Dialogs = brackets.getModule("widgets/Dialogs"),
@@ -57,7 +61,7 @@ define(function (require, exports, module) {
         console.log("[helloworld3] " + s);
     }
 
-    function handleHelloWorld() {
+    function handleSettings() {
         var str = "";
 
         console.log('we are here!!');
@@ -68,10 +72,7 @@ define(function (require, exports, module) {
         $dlg.find(".dialog-button[data-button-id='ok']").on("click", handleOk);
 
         function handleCancel() {
-
-
             Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
-
         }
 
         function handleOk() {
@@ -83,49 +84,41 @@ define(function (require, exports, module) {
             systemSettings.updateUserDir = $dlg.find("#updateUserDir:checked").val();
             systemSettings.rememberMe = $dlg.find("#rememberMe:checked").val();
             systemSettings.assignment = $dlg.find("#assignment").val();
-            console.log(((systemSettings.updateUserDir === 'checked') ? "1" : "0"));
-
-            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1", systemSettings.teamDir);
-            var currentDoc = DocumentManager.getCurrentDocument();
-            //  console.log(currentDoc.getText());
-
-
-
-            var uploader = new codeServer(systemSettings, currentDoc, Dialogs);
-            uploader.uploadToWebsite();
-            console.log(JSON.stringify(systemSettings));
-            if (systemSettings.updateUserDir == undefined) {
-                console.log('Update user unchecked' + systemSettings.updateUserDir);
-            } else {
-                console.log('Update user is checked' + systemSettings.updateUserDir);
-            }
-
+            UploadCurrentDocument();
             Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
         }
+    }
 
-        //    Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1", str);
-        //   window.alert($("#fname").val());
-
-        function test() {
-            console.log('we got the message');
-            window.alert("this is test");
-        }
+    // This function responsable for uploading the current document to the server
+    function UploadCurrentDocument() {
+        //Get the current document
+        var currentDoc = DocumentManager.getCurrentDocument();
+        var uploader = new codeServer(systemSettings, currentDoc.getText(), Dialogs, DefaultDialogs);
+        uploader.uploadToWebsite();
     }
 
 
     AppInit.appReady(function () {
         ExtensionUtils.loadStyleSheet(module, "css/style.css");
         log("Upload Assignement Extenstion");
-        var HELLOWORLD_EXECUTE = "ENG1003Uploader.monash";
-        CommandManager.register("ENG1003 Uploader", HELLOWORLD_EXECUTE, handleHelloWorld);
+
+        //Settings Window and Shortcut
+        var SETTINGS_EXECUTE = "ENG1003Uploader.settings";
+        CommandManager.register("ENG1003 Settings", SETTINGS_EXECUTE, handleSettings);
         var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
-        menu.addMenuItem(HELLOWORLD_EXECUTE);
+        menu.addMenuItem(SETTINGS_EXECUTE, SETTINGS_SHORTCUT);
 
+        //Upload Command  and Shortcut
+        var UPLOADER_EXECUTE = "ENG1003Uploader.upload";
+        CommandManager.register("Assignment Upload", UPLOADER_EXECUTE, UploadCurrentDocument);
+        var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
+        menu.addMenuItem(UPLOADER_EXECUTE, UPLOAD_SHORTCUT);
+
+        //toolbar Gear ICon for Settings
         $("#main-toolbar .buttons").append(toolbarSettings);
-        $("#toolbar-settings").on("click", handleHelloWorld);
-
+        $("#toolbar-settings").on("click", handleSettings);
+        //toolbar Cloud Icon for uploading
         $("#main-toolbar .buttons").append(toolbarUploader);
-        $("#toolbar-uploader").on("click", handleHelloWorld);
-
+        $("#toolbar-uploader").on("click", UploadCurrentDocument);
     });
 });

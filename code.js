@@ -28,11 +28,12 @@
  *
  */
 define(function (require, exports, module) {
-    function Uploader(systemSettingsPara, currentCodePara, DialogsPara) { //;) {
+    function Uploader(systemSettingsPara, currentCodePara, DialogsPara, DefaultDialogsPara) { //;) {
         var self = this;
         var systemSettings = systemSettingsPara;
         var currentCode = currentCodePara;
         var Dialogs = DialogsPara;
+        var DefaultDialogs = DefaultDialogsPara;
         var myCodeMirror;
         var useIndividualDirOption = false;
 
@@ -57,67 +58,32 @@ define(function (require, exports, module) {
             form.submit();
         };
 
-        this.publishResponse = function (data) {
-
-            console.log('we got a response :' + data.error);
-            console.log(JSON.stringify(data));
-            /*                if (data.error !== undefined) {
-                                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Uploader", data.error);
-                                console.log(data.error);
-                            } else {
-                                console.log('Uploading. Page will open...');
-
-                                var codeString = currentCode;
-                                //var escapedCode = encodeURIComponent(codeString); 
-                                /*
-                                            var teamDirField =systemSettings.teamDir;
-                                            var authcateField = systemSettings.teamDir;
-                                */
-            /*/// from here
-                var teamDir = systemSettings.teamDir;
-                var username = systemSettings.teamDir;
-                var path = systemSettings.serverAddress + '/a1publish.php';
-                var params = {
-                    teamDir: teamDir,
-                    user: username,
-                    code: codeString,
-                    assignment: systemSettings.assignment,
-                    useIndividualDir: ((systemSettings.updateUserDir === 'checked') ? "1" : "0")
-                };
-                post(path, params);
-            }
-            */
-        };
-
         this.uploadToWebsite = function () {
             console.log('uploadtoWebsite Called');
-            //document.getElementById("error").innerHTML = "";
-            //document.getElementById("success").innerHTML = "";
-
-            // Save current version of code in localStorage.
-            //var codeString = myCodeMirror.getValue();
-            //localStorage.setItem("a2uploader-code", codeString);
-
-            //var teamDirField = document.getElementById("team-dir");
-            //var authcateField = document.getElementById("authcate");
-
-            //var teamDir = teamDirField.value;
-            //var username = authcateField.value;
-
-            //localStorage.setItem("a1uploader-team-dir", teamDir);
-            //localStorage.setItem("a1uploader-authcate", username);
             var str = systemSettings.server + '/a1publishcheck.php?teamDir=' + systemSettings.teamDir + '&user=' + systemSettings.userName + '&assignment=a2&callback=define';
             require([str], function (data) {
-                console.log(data)
+
+
+                if (data.error !== undefined) {
+                    Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Uploader", data.error);
+                    console.log(data.error);
+                } else {
+                    var teamDir = systemSettings.teamDir;
+                    var username = systemSettings.userName;
+                    var path = systemSettings.server + '/a1publish.php';
+                    var params = {
+                        teamDir: teamDir,
+                        user: username,
+                        code: currentCode,
+                        assignment: systemSettings.assignment,
+                        useIndividualDir: ((systemSettings.updateUserDir === 'checked') ? "1" : "0")
+                    };
+                    console.log(params);
+                    post(path, params);
+                    console.log(data)
+                }
             });
-
-            //var script = document.createElement('script');
-            //script.src = systemSettings.server + '/a1publishcheck.php?teamDir=' + systemSettings.teamDir + '&user=' + systemSettings.userName + '&assignment=a2&callback=uploader.publishResponse'
-
-            //document.head.appendChild(script)
         }
     };
-    var uploader = new Uploader();
-    console.log('this is the main' + JSON.stringify(uploader));
     module.exports = Uploader;
 });
