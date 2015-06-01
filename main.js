@@ -39,6 +39,13 @@ define(function (require, exports, module) {
         rememberMe: 'checked'
     };
 
+    var firstRun = true;
+    var strings = {
+        SERVER_NOT_FOUND: 'Please Enter Server Address',
+        USER_NOT_FOUND: 'Please Enter User Name',
+        TEAM_NOT_FOUND: 'Please Enter Team Directory Name'
+    };
+
     //Shortcut keys for settings and uploading respectively 
     var SETTINGS_SHORTCUT = 'Ctrl-Shift-I';
     var UPLOAD_SHORTCUT = 'Ctrl-Shift-U';
@@ -57,8 +64,9 @@ define(function (require, exports, module) {
     codeServer = require('code');
 
 
+
     function log(s) {
-        console.log("[helloworld3] " + s);
+        console.log("[ENG1003Uploader] " + s);
     }
 
     function handleSettings() {
@@ -78,8 +86,24 @@ define(function (require, exports, module) {
         function handleOk() {
             var $dlg = $(".eng1003setting-dialog.instance");
             systemSettings.server = $dlg.find("#server").val();
+            if (systemSettings.server === '') {
+
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Uploader", strings.SERVER_NOT_FOUND);
+                return;
+            }
             systemSettings.teamDir = $dlg.find("#teamDir").val();
+            if (systemSettings.teamDir === '') {
+
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Uploader", strings.TEAM_NOT_FOUND);
+                return;
+            }
             systemSettings.userName = $dlg.find("#userName").val();
+            if (systemSettings.userName === '') {
+
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Uploader", strings.USER_NOT_FOUND);
+                return;
+            }
+            firstRun = false;
             systemSettings.updateTeamDir = $dlg.find("#updateTeamDir:checked").val();
             systemSettings.updateUserDir = $dlg.find("#updateUserDir:checked").val();
             systemSettings.rememberMe = $dlg.find("#rememberMe:checked").val();
@@ -91,9 +115,33 @@ define(function (require, exports, module) {
 
     // This function responsable for uploading the current document to the server
     function UploadCurrentDocument() {
+
+        if (firstRun) {
+            firstRun = false;
+            handleSettings();
+            return;
+        }
+
+        // if there is a parameter missing, call the settings again
+        if (systemSettings.server === '') {
+            handleSettings();
+            return;
+        }
+        if (systemSettings.teamDir === '') {
+            handleSettings();
+            return;
+        }
+        if (systemSettings.userName === '') {
+            handleSettings();
+            return;
+        }
+
+
         //Get the current document
         var currentDoc = DocumentManager.getCurrentDocument();
+        // Get a refernce from uploader
         var uploader = new codeServer(systemSettings, currentDoc.getText(), Dialogs, DefaultDialogs);
+        // Upload....
         uploader.uploadToWebsite();
     }
 
