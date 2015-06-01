@@ -48,9 +48,9 @@ define(function (require, exports, module) {
     ExtensionUtils = brackets.getModule("utils/ExtensionUtils");
 
     var mainDialog = require("text!dialog.html");
-    var toolbarSettings = require("text!toolbar-settings.html");
-    var toolbarUploader = require("text!toolbar-uploader.html");
-    var codeServer = require("code");
+    toolbarSettings = require("text!toolbar-settings.html");
+    toolbarUploader = require("text!toolbar-uploader.html");
+    codeServer = require('code');
 
 
     function log(s) {
@@ -88,7 +88,10 @@ define(function (require, exports, module) {
             Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Assignment Uploader-V0.1", systemSettings.teamDir);
             var currentDoc = DocumentManager.getCurrentDocument();
             //  console.log(currentDoc.getText());
-            var uploader = new Uploader(); //systemSettings, currentDoc, Dialogs);
+
+
+
+            var uploader = new codeServer(systemSettings, currentDoc, Dialogs);
             uploader.uploadToWebsite();
             console.log(JSON.stringify(systemSettings));
             if (systemSettings.updateUserDir == undefined) {

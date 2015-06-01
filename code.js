@@ -27,12 +27,12 @@
  * THE SOFTWARE.
  *
  */
-
-function Uploader() { //;systemSettingsPara, currentCodePara, DialogsPara) {
+define(function (require, exports, module) {
+    function Uploader(systemSettingsPara, currentCodePara, DialogsPara) { //;) {
         var self = this;
-        var systemSettings = null;
-        var currentCode = null;
-        var Dialogs = null;
+        var systemSettings = systemSettingsPara;
+        var currentCode = currentCodePara;
+        var Dialogs = DialogsPara;
         var myCodeMirror;
         var useIndividualDirOption = false;
 
@@ -55,11 +55,12 @@ function Uploader() { //;systemSettingsPara, currentCodePara, DialogsPara) {
             }
             document.body.appendChild(form);
             form.submit();
-        }
+        };
 
         this.publishResponse = function (data) {
 
             console.log('we got a response :' + data.error);
+            console.log(JSON.stringify(data));
             /*                if (data.error !== undefined) {
                                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Uploader", data.error);
                                 console.log(data.error);
@@ -86,9 +87,9 @@ function Uploader() { //;systemSettingsPara, currentCodePara, DialogsPara) {
                 post(path, params);
             }
             */
-        }
+        };
 
-        function uploadToWebsite() {
+        this.uploadToWebsite = function () {
             console.log('uploadtoWebsite Called');
             //document.getElementById("error").innerHTML = "";
             //document.getElementById("success").innerHTML = "";
@@ -105,67 +106,18 @@ function Uploader() { //;systemSettingsPara, currentCodePara, DialogsPara) {
 
             //localStorage.setItem("a1uploader-team-dir", teamDir);
             //localStorage.setItem("a1uploader-authcate", username);
+            var str = systemSettings.server + '/a1publishcheck.php?teamDir=' + systemSettings.teamDir + '&user=' + systemSettings.userName + '&assignment=a2&callback=define';
+            require([str], function (data) {
+                console.log(data)
+            });
 
-            var script = document.createElement('script');
-            script.src = systemSettings.serverAddress + '/a1publishcheck.php?teamDir=' + teamDir + '&user=' + username + '&assignment=a2&callback=uploader.publishResponse'
+            //var script = document.createElement('script');
+            //script.src = systemSettings.server + '/a1publishcheck.php?teamDir=' + systemSettings.teamDir + '&user=' + systemSettings.userName + '&assignment=a2&callback=uploader.publishResponse'
 
-            document.head.appendChild(script)
+            //document.head.appendChild(script)
         }
-    }
-    /*
-        this.individualDirClick = function (button) {
-            localStorage.setItem("a1uploader-use-individual-dir", button.checked);
-            useIndividualDirOption = button.checked;
-        }
-    */
-    /*  this.run = function () {
-        var publishButton = document.getElementById("publish-button");
-        publishButton.onclick = uploadToWebsite;
-
-        var myTextArea = document.getElementById("code");
-        if (localStorage.getItem("a2uploader-code") !== null) {
-            myTextArea.value = localStorage.getItem("a2uploader-code");
-        }
-
-        //var myCodeMirror = CodeMirror.fromTextArea(textarea);
-        myCodeMirror = CodeMirror(function (elt) {
-            myTextArea.parentNode.replaceChild(elt, myTextArea);
-        }, {
-            value: myTextArea.value,
-            tabMode: "indent",
-            lineNumbers: true,
-            lineWrapping: true,
-            indentUnit: 4,
-            indentWithTabs: true,
-            matchBrackets: true
-        });
-
-        if (localStorage.getItem("a1uploader-team-dir") !== null) {
-            var teamDirField = document.getElementById("team-dir");
-            teamDirField.value = localStorage.getItem("a1uploader-team-dir");
-        }
-
-        if (localStorage.getItem("a1uploader-authcate") !== null) {
-            var authcateField = document.getElementById("authcate");
-            authcateField.value = localStorage.getItem("a1uploader-authcate");
-        }
-
-        var useIndividualDirCheckbox = document.getElementById("individual-dir-button");
-        useIndividualDirCheckbox.checked = useIndividualDirOption;
-        var savedUseIndividualDirPreference = localStorage.getItem("a1uploader-use-individual-dir");
-        if (savedUseIndividualDirPreference !== null) {
-            // This preference exists in local storage.  Use that value
-            // for option and initial checkbox state.
-            var option = (savedUseIndividualDirPreference === 'true');
-            useIndividualDirCheckbox.checked = option;
-            useIndividualDirOption = option;
-        }
-
-    }
-}
-*/
-    /*
+    };
     var uploader = new Uploader();
-    window.onload = uploader.run;
-    */
-module.exports = Uploader;
+    console.log('this is the main' + JSON.stringify(uploader));
+    module.exports = Uploader;
+});
