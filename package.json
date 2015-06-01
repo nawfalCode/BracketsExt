@@ -1,7 +1,7 @@
 {
-    "name": "BracketsUploader",
-    "title": "Uploadify",
-    "description": "add",
+    "name": "ENG1003 Assignment Uploader",
+    "title": "ENG1003 Uploader",
+    "description": "This Extension is design to upload ENG1003 unit assignemtns to the servers",
     "homepage": "monash.edu",
     "version": "0.0.1",
     "author": "Nawfal Ali",
