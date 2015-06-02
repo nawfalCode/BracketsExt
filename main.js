@@ -31,14 +31,14 @@
 define(function (require, exports, module) {
     var systemSettings = {
         server: 'http://eng1003.eng.monash.edu/',
-        teamDir: 'bhdck',
-        userName: 'nawfalms',
+        teamDir: '',
+        userName: '',
         updateTeamDir: '',
         updateUserDir: 'checked',
         assignment: '',
         rememberMe: 'checked'
     };
-    // if the user hits the upload icon or shortkey without checking the settings, firstRun will be used to show the settings window 
+    // firstRun i used to show the settings window only if the user hits the upload without checking his settings 
     var firstRun = true;
     // System Strings
     var strings = {
@@ -53,8 +53,6 @@ define(function (require, exports, module) {
 
 
     };
-
-
 
     //Required Modules
     var CommandManager = brackets.getModule("command/CommandManager"),
@@ -71,29 +69,28 @@ define(function (require, exports, module) {
     codeServer = require('code');
 
 
-
+    // System log function // To console; can be improved to log to file system
     function log(s) {
-        console.log("[ENG1003Uploader] " + s);
-    }
-
+            console.log("[ENG1003Uploader] " + s);
+        }
+        // this function handles the settings windows
     function handleSettings() {
-        var str = "";
-
-        console.log('we are here!!');
+        // Show the settings window
         Dialogs.showModalDialogUsingTemplate(Mustache.render(mainDialog, systemSettings), false);
-
+        // Get an instance to register handlers 
         var $dlg = $(".eng1003setting-dialog.instance");
         $dlg.find(".dialog-button[data-button-id='cancel']").on("click", handleCancel);
         $dlg.find(".dialog-button[data-button-id='ok']").on("click", handleOk);
         //Update the Assignment List Box
-        $dlg.find("#assignment").val(systemSettings.assignment);
+        $dlg.find("#assignment").val((systemSettings.assignment) ? (systemSettings.assignment) : "a1");
 
-
+        // if the user hits the cancel, this function closes the settings window
         function handleCancel() {
-            Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
-        }
-
+                Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
+            }
+            // if the user selects the UPLOAD button, 
         function handleOk() {
+            // Data validation
             var $dlg = $(".eng1003setting-dialog.instance");
             systemSettings.server = $dlg.find("#server").val();
             if (systemSettings.server === '') {
@@ -113,6 +110,7 @@ define(function (require, exports, module) {
                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, "ENG1003 Uploader", strings.USER_NOT_FOUND);
                 return;
             }
+            // No need to show the settings window again
             firstRun = false;
             systemSettings.updateTeamDir = $dlg.find("#updateTeamDir:checked").val();
             systemSettings.updateUserDir = $dlg.find("#updateUserDir:checked").val();
@@ -127,6 +125,7 @@ define(function (require, exports, module) {
         }
     }
 
+    //Save/Remove Settings to Local Storage
 
     function setSettingsToStorage() {
         if (systemSettings.rememberMe === 'checked') {
@@ -136,47 +135,48 @@ define(function (require, exports, module) {
         }
     }
 
-    // This function responsable for uploading the current document to the server
+    // This function is responsable for uploading the current document to the server
     function UploadCurrentDocument() {
 
-        if (firstRun) {
-            firstRun = false;
-            handleSettings();
-            return;
-        }
+            if (firstRun) {
+                firstRun = false;
+                handleSettings();
+                return;
+            }
 
-        // if there is a parameter missing, call the settings again
-        if (systemSettings.server === '') {
-            handleSettings();
-            return;
-        }
-        if (systemSettings.teamDir === '') {
-            handleSettings();
-            return;
-        }
-        if (systemSettings.userName === '') {
-            handleSettings();
-            return;
-        }
+            // if there is a missing parameter , call the settings window again
+            if (systemSettings.server === '') {
+                handleSettings();
+                return;
+            }
+            if (systemSettings.teamDir === '') {
+                handleSettings();
+                return;
+            }
+            if (systemSettings.userName === '') {
+                handleSettings();
+                return;
+            }
 
 
-        //Get the current document
-        var currentDoc = DocumentManager.getCurrentDocument();
-        // Get a refernce from uploader
-        var uploader = new codeServer(systemSettings, currentDoc.getText(), Dialogs, DefaultDialogs);
-        // Upload....
-        uploader.uploadToWebsite();
-    }
-
+            //Get the current document
+            var currentDoc = DocumentManager.getCurrentDocument();
+            // Get a refernce from teh uploader (Michael's Code)
+            var uploader = new codeServer(systemSettings, currentDoc.getText(), Dialogs, DefaultDialogs);
+            // Upload....
+            uploader.uploadToWebsite();
+        }
+        // Get saved settings from localStorage; if any....
     function getSettingsFromStorage() {
-        var savedSettings = localStorage.getItem(strings.STORAGE_KEY);
-        log(savedSettings);
-        if (savedSettings !== null) {
-            systemSettings = JSON.parse(savedSettings);
+            var savedSettings = localStorage.getItem(strings.STORAGE_KEY);
+            log(savedSettings);
+            if (savedSettings !== null) {
+                systemSettings = JSON.parse(savedSettings);
+            }
         }
-    }
-
+        // Main Function
     AppInit.appReady(function () {
+        //Load CSS file
         ExtensionUtils.loadStyleSheet(module, "css/style.css");
         log("Upload Assignement Extenstion");
         getSettingsFromStorage();

@@ -1,8 +1,9 @@
 {
-    "name": "FTP-Sync",
-    "description": "This Extension is design to upload ENG1003 unit assignemtns to the servers",
-    "version": "1.4.0",
-    "author": "Nawfal Ali",
+    "name": "eng1003.uploader",
+    "title": "ENG1003 Uploader",
+    "description": "Uploads ENG1003 assignments to servers",
+    "version": "1.0.0",
+    "author": "Nawfal Ali, Michael Wybrow",
     "license": "MIT",
     "engines": {
         "brackets": ">=0.31.0"
