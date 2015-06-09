@@ -192,6 +192,14 @@ define(function (require, exports, module) {
         var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
         menu.addMenuItem(UPLOADER_EXECUTE, strings.UPLOAD_SHORTCUT);
 
+        //Righ Click Handler
+        var UPLOADER_EXECUTE_RIGHTCLICK = "ENG1003Uploaderright.upload";
+        CommandManager.register(strings.UPLOAD_NEMU_TITLE, UPLOADER_EXECUTE_RIGHTCLICK, UploadCurrentDocument);
+        Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).addMenuDivider();
+        Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).addMenuItem(UPLOADER_EXECUTE_RIGHTCLICK);
+
+
+
         //toolbar Gear ICon for Settings
         $("#main-toolbar .buttons").append(toolbarSettings);
         $("#toolbar-settings").on("click", handleSettings);
