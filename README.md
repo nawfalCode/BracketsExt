@@ -9,7 +9,7 @@ How to Install
 How to Use
 -----------
 This extension uploads the current viewed document only.
-1.To set your configrations:
+1. To set your configrations:
 ⋅⋅* Navigate to Edit --> ENG1003 Settings ![alt text](https://raw.githubusercontent.com/nawfalCode/BracketsExt/master/img/settings.png ""), Or
 ⋅⋅* Click on the Blue Gear Icon on the toolbar
 2. To Upload:
