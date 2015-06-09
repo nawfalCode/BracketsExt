@@ -10,11 +10,11 @@ How to Use
 -----------
 This extension uploads the current viewed document only.
 1.To set your configrations:
-⋅⋅* Navigate to Edit --> ENG1003 Settings ![alt text](https://github.com/nawfalCode/BracketsExt/blob/master/img/settings.png ""), Or
+⋅⋅* Navigate to Edit --> ENG1003 Settings ![alt text](https://github.com/nawfalCode/BracketsExt/blob/master/img/settings.png =48x48""), Or
 ⋅⋅* Click on the Blue Gear Icon on the toolbar
 2. To Upload:
 ⋅⋅* Navigate to Edit --> ENG1003 Uploader, Or
-⋅⋅* Click on the Green CLoud Idon on the toolbar ![alt text](https://github.com/nawfalCode/BracketsExt/blob/master/img/upload2.png ""), Or
+⋅⋅* Click on the Green CLoud Idon on the toolbar ![alt text](https://github.com/nawfalCode/BracketsExt/blob/master/img/upload2.png =48x48 ""), Or
 ⋅⋅* Righ Click and select ENG1003 Uploader
 
 
