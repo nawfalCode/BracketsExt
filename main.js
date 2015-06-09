@@ -183,13 +183,13 @@ define(function (require, exports, module) {
         //Settings Window and Shortcut
         var SETTINGS_EXECUTE = "ENG1003Uploader.settings";
         CommandManager.register(strings.SETTINGS_MENU_TITLE, SETTINGS_EXECUTE, handleSettings);
-        var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
+        var menu = Menus.getMenu(Menus.AppMenuBar.EDIT_MENU);
+        menu.addMenuDivider();
         menu.addMenuItem(SETTINGS_EXECUTE, strings.SETTINGS_SHORTCUT);
 
         //Upload Command  and Shortcut
         var UPLOADER_EXECUTE = "ENG1003Uploader.upload";
         CommandManager.register(strings.UPLOAD_NEMU_TITLE, UPLOADER_EXECUTE, UploadCurrentDocument);
-        var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
         menu.addMenuItem(UPLOADER_EXECUTE, strings.UPLOAD_SHORTCUT);
 
         //Righ Click Handler
