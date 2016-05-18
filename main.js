@@ -1,5 +1,5 @@
 /*
- * ENG1003 Assignment Uploader
+ * ENG1003 Assignment Uploader Brackets extension
  *
  * Written by Nawfal Ali
  *
@@ -30,50 +30,50 @@
 
 define(function (require, exports, module) {
     var systemSettings = {
-        server: 'http://eng1003.eng.monash.edu/',
-        teamDir: '',
-        userName: '',
+        server       : 'https://eng1003.eng.monash.edu/',
+        teamDir      : '',
+        userName     : '',
         updateTeamDir: '',
         updateUserDir: 'checked',
-        assignment: '',
-        rememberMe: 'checked'
+        assignment   : '',
+        rememberMe   : 'checked'
     };
     // firstRun i used to show the settings window only if the user hits the upload without checking his settings 
-    var firstRun = true;
+    var firstRun       = true;
     // System Strings
-    var strings = {
-        SERVER_NOT_FOUND: 'Please Enter Server Address',
-        USER_NOT_FOUND: 'Please Enter User Name',
-        TEAM_NOT_FOUND: 'Please Enter Team Directory Name',
-        SETTINGS_SHORTCUT: 'Ctrl-Shift-I',
-        SETTINGS_MENU_TITLE: 'ENG1003 Settings',
-        UPLOAD_SHORTCUT: 'Ctrl-Shift-U',
-        UPLOAD_NEMU_TITLE: 'ENG1003 Uploader',
-        STORAGE_KEY: 'Eng1003Uploader.Monash',
-
-
+    var strings        = {
+        SERVER_NOT_FOUND   : 'Please Enter Server Address',
+        USER_NOT_FOUND     : 'Please Enter User Name',
+        TEAM_NOT_FOUND     : 'Please Enter Team Directory Name',
+        SETTINGS_MENU_TITLE: 'ENG1003 Uploader Settings',
+        UPLOAD_SHORTCUT    : 'Ctrl-Shift-U',
+        UPLOAD_MENU_TITLE  : 'ENG1003 Uploader',
+        STORAGE_KEY        : 'Eng1003Uploader.Monash',
     };
 
     //Required Modules
     var CommandManager = brackets.getModule("command/CommandManager"),
-        Menus = brackets.getModule("command/Menus"),
-        Dialogs = brackets.getModule("widgets/Dialogs"),
+        Menus          = brackets.getModule("command/Menus"),
+        Dialogs        = brackets.getModule("widgets/Dialogs"),
         DefaultDialogs = brackets.getModule("widgets/DefaultDialogs"),
-        AppInit = brackets.getModule("utils/AppInit");
-    DocumentManager = brackets.getModule("document/DocumentManager");
-    ExtensionUtils = brackets.getModule("utils/ExtensionUtils");
+        AppInit        = brackets.getModule("utils/AppInit");
+    DocumentManager    = brackets.getModule("document/DocumentManager");
+    ExtensionUtils     = brackets.getModule("utils/ExtensionUtils");
+    directory          = brackets.getModule("filesystem/Directory");
+    FileSystem         = brackets.getModule("filesystem/FileSystem");
 
-    var mainDialog = require("text!dialog.html");
-    toolbarSettings = require("text!toolbar-settings.html");
+    var mainDialog  = require("text!dialog.html");
     toolbarUploader = require("text!toolbar-uploader.html");
-    codeServer = require('code');
+    codeUploader    = require('codeuploader');
 
 
-    // System log function // To console; can be improved to log to file system
+    // System log function
+    // To console; can be improved to log to file system
     function log(s) {
-            console.log("[ENG1003Uploader] " + s);
-        }
-        // this function handles the settings windows
+        console.log("[ENG1003Uploader] " + s);
+    }
+
+    // This function handles the settings windows
     function handleSettings() {
         // Show the settings window
         Dialogs.showModalDialogUsingTemplate(Mustache.render(mainDialog, systemSettings), false);
@@ -81,17 +81,25 @@ define(function (require, exports, module) {
         var $dlg = $(".eng1003setting-dialog.instance");
         $dlg.find(".dialog-button[data-button-id='cancel']").on("click", handleCancel);
         $dlg.find(".dialog-button[data-button-id='ok']").on("click", handleOk);
-        //Update the Assignment List Box
-        $dlg.find("#assignment").val((systemSettings.assignment) ? (systemSettings.assignment) : "a1");
+
+        // Update the Assignment List Box.  Select the first option by default.
+        var chosenAssignment = $("#assignment option:first").val();
+        if (systemSettings.assignment) {
+
+            // Or use the user's saved preference. 
+            chosenAssignment = systemSettings.assignment;
+        }
+        $dlg.find("#assignment").val(chosenAssignment);
 
         // if the user hits the cancel, this function closes the settings window
         function handleCancel() {
-                Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
-            }
-            // if the user selects the UPLOAD button, 
+            Dialogs.cancelModalDialogIfOpen("eng1003setting-dialog");
+        }
+
+        // if the user selects the UPLOAD button, 
         function handleOk() {
             // Data validation
-            var $dlg = $(".eng1003setting-dialog.instance");
+            var $dlg              = $(".eng1003setting-dialog.instance");
             systemSettings.server = $dlg.find("#server").val();
             if (systemSettings.server === '') {
 
@@ -111,11 +119,11 @@ define(function (require, exports, module) {
                 return;
             }
             // No need to show the settings window again
-            firstRun = false;
+            firstRun                     = false;
             systemSettings.updateTeamDir = $dlg.find("#updateTeamDir:checked").val();
             systemSettings.updateUserDir = $dlg.find("#updateUserDir:checked").val();
-            systemSettings.rememberMe = $dlg.find("#rememberMe:checked").val();
-            systemSettings.assignment = $dlg.find("#assignment").val();
+            systemSettings.rememberMe    = $dlg.find("#rememberMe:checked").val();
+            systemSettings.assignment    = $dlg.find("#assignment").val();
             //Save/Remove Settings to Local Storage
             setSettingsToStorage();
             //Upload the Document
@@ -125,8 +133,7 @@ define(function (require, exports, module) {
         }
     }
 
-    //Save/Remove Settings to Local Storage
-
+    // Save/Remove Settings to Local Storage
     function setSettingsToStorage() {
         if (systemSettings.rememberMe === 'checked') {
             localStorage.setItem(strings.STORAGE_KEY, JSON.stringify(systemSettings));
@@ -138,72 +145,103 @@ define(function (require, exports, module) {
     // This function is responsable for uploading the current document to the server
     function UploadCurrentDocument() {
 
-            if (firstRun) {
-                firstRun = false;
-                handleSettings();
-                return;
-            }
-
-            // if there is a missing parameter , call the settings window again
-            if (systemSettings.server === '') {
-                handleSettings();
-                return;
-            }
-            if (systemSettings.teamDir === '') {
-                handleSettings();
-                return;
-            }
-            if (systemSettings.userName === '') {
-                handleSettings();
-                return;
-            }
-
-
-            //Get the current document
-            var currentDoc = DocumentManager.getCurrentDocument();
-            // Get a refernce from teh uploader (Michael's Code)
-            var uploader = new codeServer(systemSettings, currentDoc.getText(), Dialogs, DefaultDialogs);
-            // Upload....
-            uploader.uploadToWebsite();
+        if (firstRun) {
+            firstRun = false;
+            handleSettings();
+            return;
         }
-        // Get saved settings from localStorage; if any....
+
+        // If there is a missing parameter , call the settings window again
+        if (systemSettings.server === '') {
+            handleSettings();
+            return;
+        }
+        if (systemSettings.teamDir === '') {
+            handleSettings();
+            return;
+        }
+        if (systemSettings.userName === '') {
+            handleSettings();
+            return;
+        }
+
+
+        // Get the current document
+        var currentDoc = DocumentManager.getCurrentDocument();
+
+        console.log(DocumentManager.getCurrentDocument().file);
+        var uploader          = new codeUploader(systemSettings, currentDoc.getText(), Dialogs, DefaultDialogs);
+        var listFiles         = [];
+        var listFilesFullPath = [];
+        getFileList(DocumentManager.getCurrentDocument().file._parentPath, 1);
+
+
+        function getFileList(fileName, level) {
+            var directory = FileSystem.getDirectoryForPath(fileName);
+            directory.getContents(function (err, entries) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    entries.forEach(function (entry) {
+                        console.log('Entry: _isDir' + entry._isDirectory + '   entry Path' + entry._path);
+                        if (entry._isDirectory) {
+
+                            getFileList(entry._path, (level + 1));
+                        }
+                        else {
+                            listFiles.push(getParentFilename(entry._path, level));
+                            listFilesFullPath.push(entry._path);
+                        }
+                    });
+                }
+            });
+            if (level === 1) {
+                console.log(listFiles);
+                uploader.uploadToWebsite(listFiles, listFilesFullPath);
+            }
+        }
+    }
+
+
+    function getParentFilename(fullName, depth) {
+        return (fullName.split('/').slice(-depth).join('/') );
+    }
+
+    // Get saved settings from localStorage; if any....
     function getSettingsFromStorage() {
-            var savedSettings = localStorage.getItem(strings.STORAGE_KEY);
-            log(savedSettings);
-            if (savedSettings !== null) {
-                systemSettings = JSON.parse(savedSettings);
-            }
+        var savedSettings = localStorage.getItem(strings.STORAGE_KEY);
+        log(savedSettings);
+        if (savedSettings !== null) {
+            systemSettings = JSON.parse(savedSettings);
         }
-        // Main Function
+    }
+
+    // Main Function
     AppInit.appReady(function () {
         //Load CSS file
         ExtensionUtils.loadStyleSheet(module, "css/style.css");
-        log("Upload Assignement Extenstion");
+        log("Upload Assignment Extenstion");
         getSettingsFromStorage();
-        //Settings Window and Shortcut
+
+        // Settings Window and Shortcut
+        var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
+        menu.addMenuDivider();
         var SETTINGS_EXECUTE = "ENG1003Uploader.settings";
         CommandManager.register(strings.SETTINGS_MENU_TITLE, SETTINGS_EXECUTE, handleSettings);
-        var menu = Menus.getMenu(Menus.AppMenuBar.EDIT_MENU);
-        menu.addMenuDivider();
-        menu.addMenuItem(SETTINGS_EXECUTE, strings.SETTINGS_SHORTCUT);
+        menu.addMenuItem(SETTINGS_EXECUTE);
 
-        //Upload Command  and Shortcut
+        // Upload Command and Shortcut
         var UPLOADER_EXECUTE = "ENG1003Uploader.upload";
-        CommandManager.register(strings.UPLOAD_NEMU_TITLE, UPLOADER_EXECUTE, UploadCurrentDocument);
+        CommandManager.register(strings.UPLOAD_MENU_TITLE, UPLOADER_EXECUTE, UploadCurrentDocument);
         menu.addMenuItem(UPLOADER_EXECUTE, strings.UPLOAD_SHORTCUT);
 
-        //Righ Click Handler
+        // Right-click handler
         var UPLOADER_EXECUTE_RIGHTCLICK = "ENG1003Uploaderright.upload";
-        CommandManager.register(strings.UPLOAD_NEMU_TITLE, UPLOADER_EXECUTE_RIGHTCLICK, UploadCurrentDocument);
+        CommandManager.register(strings.UPLOAD_MENU_TITLE, UPLOADER_EXECUTE_RIGHTCLICK, UploadCurrentDocument);
         Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).addMenuDivider();
         Menus.getContextMenu(Menus.ContextMenuIds.EDITOR_MENU).addMenuItem(UPLOADER_EXECUTE_RIGHTCLICK);
 
-
-
-        //toolbar Gear ICon for Settings
-        $("#main-toolbar .buttons").append(toolbarSettings);
-        $("#toolbar-settings").on("click", handleSettings);
-        //toolbar Cloud Icon for uploading
+        // Toolbar Cloud icon for uploading
         $("#main-toolbar .buttons").append(toolbarUploader);
         $("#toolbar-uploader").on("click", UploadCurrentDocument);
     });
